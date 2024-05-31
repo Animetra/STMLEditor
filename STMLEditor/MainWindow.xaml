@@ -1,0 +1,105 @@
+﻿<Window x:Class="STMLEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:model="clr-namespace:STMLEditor.Model"
+        xmlns:vm="clr-namespace:STMLEditor.ViewModel"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="700" Width="1024">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+
+    <Menu Grid.Row="0" Name="Menu">
+      <MenuItem Header="File">
+        <MenuItem Header="New" Click="New"/>
+        <MenuItem Header="Open" Click="Open"/>
+        <Separator/>
+        <MenuItem Header="Save" Click="Save"/>
+        <MenuItem Header="Save As" Click="SaveAs"/>
+        <Separator/>
+        <MenuItem Header="Exit" Click="Exit"/>
+      </MenuItem>
+      <MenuItem Header="Edit">
+        <MenuItem Header="Export" />
+      </MenuItem>
+      <MenuItem Header="Settings"/>
+      <MenuItem Header="View"/>
+      <MenuItem Header="Info"/>
+    </Menu>
+
+    <Grid Grid.Row="1" Name="MainArea">
+      
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" MinWidth="200"/>
+        <ColumnDefinition Width="Auto" MinWidth="200"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      
+      <Grid Grid.Column="0" Name="Structure">
+        
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+
+          <Button Click="AddLibrary">
+            <TextBlock Text="Add Library"/>
+          </Button>
+
+          <Button Click="AddChild">
+            <TextBlock Text="Add Child"/>
+          </Button>
+
+        </StackPanel>
+        
+        <TreeView Grid.Row="1" Name="ProjectTreeView" ItemsSource="{Binding Hierarchy}" SelectedItemChanged="OnSelectedItemChanged">
+          <TreeView.Resources>
+            <HierarchicalDataTemplate ItemsSource="{Binding Path=Children}" DataType="{x:Type model:STMLElement}">
+              <StackPanel>
+                <Grid>
+                  <TextBlock Text="{Binding Path=Header.Name}" Margin="5, 5, 40, 5" IsHitTestVisible="False"/>
+                </Grid>
+              </StackPanel>
+            </HierarchicalDataTemplate>
+          </TreeView.Resources>
+        </TreeView>
+        
+      </Grid>
+      
+      <Grid Grid.Column="1" Name="Settings">
+        <StackPanel Orientation="Vertical">
+          <StackPanel Orientation="Horizontal">
+            <TextBox Text="{Binding Path=SelectedElement.Header.Name, UpdateSourceTrigger=PropertyChanged}"/>
+          </StackPanel>
+        </StackPanel>
+      </Grid>
+      
+      <Border Grid.Column="2" Name="TextWindow" Background="Gray">
+          <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <Border Margin="50" Padding="50" Background="White" Height="Auto" MinHeight="200">
+            <Border.Effect>
+              <DropShadowEffect BlurRadius="10" Direction="-45" ShadowDepth="5" Opacity="0.3"/>
+            </Border.Effect>
+            <StackPanel Orientation="Vertical">
+              <ItemsControl ItemsSource="{Binding TextsToEdit, UpdateSourceTrigger=PropertyChanged}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <vm:EditableText STMLText="{Binding}" Margin="0,0,5,5" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+          </ScrollViewer>
+      </Border>
+      
+    </Grid>
+
+  </Grid>
+</Window>
