@@ -3,33 +3,40 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:model="clr-namespace:STMLEditor.Model"
+        xmlns:model="clr-namespace:STML.Model;assembly=STML"
         xmlns:vm="clr-namespace:STMLEditor.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1024">
+        Title="MainWindow" Height="700" Width="1024" Background="{DynamicResource PrimaryBackground}">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
-    <Menu Grid.Row="0" Name="Menu">
-      <MenuItem Header="File">
-        <MenuItem Header="New" Click="New"/>
-        <MenuItem Header="Open" Click="Open"/>
-        <Separator/>
-        <MenuItem Header="Save" Click="Save"/>
-        <MenuItem Header="Save As" Click="SaveAs"/>
-        <Separator/>
-        <MenuItem Header="Exit" Click="Exit"/>
-      </MenuItem>
-      <MenuItem Header="Edit">
-        <MenuItem Header="Export" />
-      </MenuItem>
-      <MenuItem Header="Settings"/>
-      <MenuItem Header="View"/>
-      <MenuItem Header="Info"/>
-    </Menu>
+    <Grid Grid.Row="0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <Menu Grid.Column="0" Name="Menu" Margin="2,5,0,5">
+        <MenuItem Header="File">
+          <MenuItem Header="New" Click="New"/>
+          <MenuItem Header="Open" Click="Open"/>
+          <Separator/>
+          <MenuItem Header="Save" Click="Save"/>
+          <MenuItem Header="Save As" Click="SaveAs"/>
+          <Separator/>
+          <MenuItem Header="Exit" Click="Exit"/>
+        </MenuItem>
+        <MenuItem Header="Edit">
+          <MenuItem Header="Export" />
+        </MenuItem>
+        <MenuItem Header="Settings"/>
+        <MenuItem Header="View"/>
+        <MenuItem Header="Info"/>
+      </Menu>
+    </Grid>
 
     <Grid Grid.Row="1" Name="MainArea">
       
@@ -38,65 +45,102 @@
         <ColumnDefinition Width="Auto" MinWidth="200"/>
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
-      
-      <Grid Grid.Column="0" Name="Structure">
+      <Border Grid.Column="0" Style="{StaticResource MainSection}">
+        <Grid Name="Structure">
         
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        
-        <StackPanel Orientation="Horizontal" Grid.Row="0">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
 
-          <Button Click="AddLibrary">
-            <TextBlock Text="Add Library"/>
-          </Button>
-
-          <Button Click="AddChild">
-            <TextBlock Text="Add Child"/>
-          </Button>
-
-        </StackPanel>
-        
-        <TreeView Grid.Row="1" Name="ProjectTreeView" ItemsSource="{Binding Hierarchy}" SelectedItemChanged="OnSelectedItemChanged">
-          <TreeView.Resources>
-            <HierarchicalDataTemplate ItemsSource="{Binding Path=Children}" DataType="{x:Type model:STMLElement}">
-              <StackPanel>
-                <Grid>
-                  <TextBlock Text="{Binding Path=Header.Name}" Margin="5, 5, 40, 5" IsHitTestVisible="False"/>
-                </Grid>
-              </StackPanel>
-            </HierarchicalDataTemplate>
-          </TreeView.Resources>
-        </TreeView>
-        
-      </Grid>
-      
-      <Grid Grid.Column="1" Name="Settings">
-        <StackPanel Orientation="Vertical">
-          <StackPanel Orientation="Horizontal">
-            <TextBox Text="{Binding Path=SelectedElement.Header.Name, UpdateSourceTrigger=PropertyChanged}"/>
+          <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <Button Command="{Binding AddLibrary}">+Library</Button>
+            <vm:TreeViewMenuControl x:Name="TreeViewMenu" Content="{Binding SelectedElement}" MinHeight="50"/>
+            <Button Click="RemoveElement">-</Button>
           </StackPanel>
-        </StackPanel>
-      </Grid>
-      
-      <Border Grid.Column="2" Name="TextWindow" Background="Gray">
-          <ScrollViewer VerticalScrollBarVisibility="Auto">
-          <Border Margin="50" Padding="50" Background="White" Height="Auto" MinHeight="200">
-            <Border.Effect>
-              <DropShadowEffect BlurRadius="10" Direction="-45" ShadowDepth="5" Opacity="0.3"/>
-            </Border.Effect>
-            <StackPanel Orientation="Vertical">
-              <ItemsControl ItemsSource="{Binding TextsToEdit, UpdateSourceTrigger=PropertyChanged}">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate>
-                    <vm:EditableText STMLText="{Binding}" Margin="0,0,5,5" />
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
+        
+          <TreeView Grid.Row="1" Name="ProjectTreeView" ItemsSource="{Binding ActiveProject.Libraries}" SelectedItemChanged="OnSelectedItemChanged">
+            <TreeView.Resources>
+              <HierarchicalDataTemplate ItemsSource="{Binding Path=Children}" DataType="{x:Type model:STMLElement}">
+                <DockPanel x:Name="TreeViewItem" LastChildFill="True">
+                  <TextBlock DockPanel.Dock="Left" Text="{Binding Path=Header.Name}" Margin="5, 5, 40, 5" IsHitTestVisible="False"/>
+                </DockPanel>
+              </HierarchicalDataTemplate>
+            </TreeView.Resources>
+          </TreeView>
+        
+        </Grid>
+      </Border>
+
+      <Border Grid.Column="1" Name="Settings" Padding="10" Style="{DynamicResource MainSection}">
+        <vm:STMLSettingsControl Content="{Binding SelectedElement}"/>
+      </Border>
+
+      <Border Grid.Column="2" Style="{DynamicResource MainSection}">
+        <Grid  Name="TextWindow" Background="{DynamicResource EmptyCanvas}">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+
+          <StackPanel Grid.Row="0" Style="{DynamicResource Toolbar}" Orientation="Horizontal">
+            <Button Click="NestInTag" Tag="b" FontWeight="Bold">b</Button>
+            <Button Click="NestInTag" Tag="i" FontStyle="Italic">i</Button>
+            <ComboBox SelectedIndex="2">
+              <ComboBoxItem>
+                <Button Click="NestInTag" Tag="size value=&quot;verybig&quot;">Very Big</Button>
+              </ComboBoxItem>
+              <ComboBoxItem>
+                <Button Click="NestInTag" Tag="size value=&quot;biggerg&quot;">Bigger</Button>
+              </ComboBoxItem>
+              <ComboBoxItem>
+                <Button Click="NestInTag" Tag="size value=&quot;big&quot;">Big</Button>
+              </ComboBoxItem>
+              <ComboBoxItem>
+                <Button Click="NestInTag" Tag="size value=&quot;small&quot;">Small</Button>
+              </ComboBoxItem>
+              <ComboBoxItem>
+                <Button Click="NestInTag" Tag="size value=&quot;small&quot;">Smaller</Button>
+              </ComboBoxItem>
+              <ComboBoxItem>
+                <Button Click="NestInTag" Tag="size value=&quot;verysmall&quot;">Very Small</Button>
+              </ComboBoxItem>
+            </ComboBox>
+            <Button Click="NestInTag" Tag="b">&lt;color&gt;</Button>
+
+            
+          </StackPanel>
+
+          <ScrollViewer Grid.Row="1">
+            <Border Margin="50" Padding="50" Background="White" Height="Auto" MinHeight="200">
+              <Border.Effect>
+                <DropShadowEffect BlurRadius="10" Direction="-45" ShadowDepth="5" Opacity="0.3"/>
+              </Border.Effect>
+              <StackPanel Orientation="Vertical">
+                <ItemsControl x:Name="editor" ItemsSource="{Binding ObjectsInEditor, UpdateSourceTrigger=PropertyChanged}" >
+                  <ItemsControl.Resources>
+                    <DataTemplate DataType="{x:Type model:STMLExpression}">
+                      <vm:ExpressionControl STMLExpression="{Binding}" IsEditorView="{Binding ElementName=editor, Path=DataContext.IsEditorView}" IsTabStop="False" />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type model:STMLTerm}">
+                      <vm:TermControl STMLTerm="{Binding}" IsTabStop="False"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type model:STMLVariable}">
+                      <vm:VariableControl Variable="{Binding}" IsTabStop="False"/>
+                    </DataTemplate>
+                  </ItemsControl.Resources>
+                </ItemsControl>
+              </StackPanel>
+            </Border>
+          </ScrollViewer>
+          <Border Grid.Row="2" Style="{DynamicResource MainSection}" Padding="3">
+            <StackPanel Orientation="Horizontal">
+              <CheckBox IsChecked="{Binding IsEditorView}" Margin="0,0,10,0"/>
+              <TextBlock Text="Editor View"/>
             </StackPanel>
           </Border>
-          </ScrollViewer>
+        </Grid>
       </Border>
       
     </Grid>

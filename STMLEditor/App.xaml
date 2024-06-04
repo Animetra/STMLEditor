@@ -1,23 +1,383 @@
 ﻿<Application x:Class="STMLEditor.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:STMLEditor"
+             xmlns:model="clr-namespace:STML.Model;assembly=STML"
              xmlns:vm="clr-namespace:STMLEditor.ViewModel"
+             xmlns:c="clr-namespace:STMLEditor.Converters"
              StartupUri="MainWindow.xaml">
+
     <Application.Resources>
-      <Style TargetType="vm:EditableText">
+
+    <!-- Converters -->
+
+    <c:LanguageCodeConverter x:Key="languageConverter"/>
+
+    <!-- Style Sheet -->
+    <Color x:Key="Endless Void">#303030</Color>
+    <Color x:Key="Hole In Nothing">#202020</Color>
+    <Color x:Key="Matter">#505050</Color>
+    <Color x:Key="Dark Matter">#484848</Color>
+    <Color x:Key="Glimmer Of Hope">#808080</Color>
+    <Color x:Key="Excitingly Boring">#B0B0B0</Color>
+    <Color x:Key="Wannabe White">#E0E0E0</Color>
+    <Color x:Key="Tabula Rasa">#787878</Color>
+    <Color x:Key="Narcisstic Purple">#E07000</Color>
+    <Color x:Key="Soul">#000000</Color>
+
+    <SolidColorBrush x:Key="PrimaryBackground" Color="{DynamicResource Endless Void}"/>
+    <SolidColorBrush x:Key="SecondaryBackground" Color="{DynamicResource Hole In Nothing}"/>
+    <SolidColorBrush x:Key="PokingFromBackground" Color="{DynamicResource Matter}"/>
+    <SolidColorBrush x:Key="Border" Color="{DynamicResource Excitingly Boring}"/>
+    <SolidColorBrush x:Key="HoverBackground" Color="{DynamicResource Glimmer Of Hope}"/>
+    <SolidColorBrush x:Key="DarkForeground" Color="{DynamicResource Hole In Nothing}"/>
+    <SolidColorBrush x:Key="BrightForeground" Color="{DynamicResource Wannabe White}"/>
+    <SolidColorBrush x:Key="DisabledForeground" Color="{DynamicResource Glimmer Of Hope}"/>
+    <SolidColorBrush x:Key="DocPrimaryForeground" Color="{DynamicResource Soul}"/>
+    <SolidColorBrush x:Key="DocSecondaryForeground" Color="{DynamicResource Glimmer Of Hope}"/>
+    <SolidColorBrush x:Key="EmptyCanvas" Color="{DynamicResource Tabula Rasa}" />
+    <SolidColorBrush x:Key="Accent" Color="{DynamicResource Narcisstic Purple}" />
+
+    <Style TargetType="Grid">
+      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
+    </Style>
+
+    <Style TargetType="Border" x:Key="MainSection">
+      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Margin" Value="1"/>
+      <Setter Property="Padding" Value="2"/>
+      <Setter Property="CornerRadius" Value="5"/>
+    </Style>
+
+    <Style TargetType="DockPanel" x:Key="TreeViewItem">
+      <Setter Property="Background" Value="{DynamicResource PokingFromBackground}"/>
+    </Style>
+
+    <Style TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource BrightForeground}"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}" x:Key="Title">
+      <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+      <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}" x:Key="Value">
+      <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
+
+    <Style TargetType="TextBox">
+      <Setter Property="Foreground" Value="{DynamicResource DarkForeground}"/>
+    </Style>
+
+    <Style TargetType="ComboBox">
+      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
+      <Setter Property="Foreground" Value="{DynamicResource DarkForeground}"/>
+      <Setter Property="Focusable" Value="False"/>
+    </Style>
+
+    <Style TargetType="ComboBoxItem">
+      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
+      <Setter Property="Foreground" Value="{DynamicResource DarkForeground}"/>
+      <Setter Property="Focusable" Value="False"/>
+    </Style>
+
+    <Style TargetType="Menu">
+      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
+    </Style>
+
+    <Style TargetType="TreeView">
+      <Setter Property="Background" Value="{DynamicResource SecondaryBackground}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style TargetType="StackPanel" x:Key="Toolbar">
+      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
+      <Setter Property="Effect">
+        <Setter.Value>
+          <DropShadowEffect BlurRadius="15" Direction="-90" ShadowDepth="3" Opacity="0.3"/>
+        </Setter.Value>
+      </Setter>
+
+
+    </Style>
+
+
+    <Style TargetType="{x:Type ToolTip}">
+      <Setter Property="Foreground" Value="{DynamicResource BrightForeground}" />
+      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Border}" />
+
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="{x:Type ToolTip}">
+            <Border CornerRadius="2" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Padding="2">
+              <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" />
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Button}">
+      <Setter Property="Foreground" Value="{DynamicResource BrightForeground}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Border}" />
+      <Setter Property="Focusable" Value="False"/>
+
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="{x:Type Button}">
+            <Border Name="Border" CornerRadius="4" BorderThickness="0" Margin="3" Padding="7,3,7,3">
+              <Border.Background>
+                <LinearGradientBrush StartPoint="0.55 1" EndPoint="0.45 0">
+                  <GradientStop Offset="0" Color="{StaticResource Dark Matter}"/>
+                  <GradientStop Offset="1" Color="{StaticResource Matter}"/>
+                </LinearGradientBrush>
+              </Border.Background>
+              <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" />
+            </Border>
+
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" TargetName="Border">
+                  <Setter.Value>
+                    <LinearGradientBrush StartPoint="0.5 1" EndPoint="0.5 0">
+                      <GradientStop Offset="0" Color="{StaticResource Matter}"/>
+                      <GradientStop Offset="1" Color="{StaticResource Glimmer Of Hope}"/>
+                    </LinearGradientBrush>
+                  </Setter.Value>
+                </Setter>
+              </Trigger>
+
+              <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" TargetName="Border">
+                  <Setter.Value>
+                    <LinearGradientBrush StartPoint="0.52 1" EndPoint="0.48 0">
+                      <GradientStop Offset="0" Color="{StaticResource Glimmer Of Hope}"/>
+                      <GradientStop Offset="1" Color="{StaticResource Narcisstic Purple}"/>
+                    </LinearGradientBrush>
+                  </Setter.Value>
+                </Setter>
+
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style TargetType="ContextMenu">
+      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
+      <Setter Property="Foreground" Value="{DynamicResource BrightForeground}"/>
+    </Style>
+
+
+    <Style TargetType="vm:TreeViewMenuControl">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="vm:TreeViewMenuControl">
+            <ContentPresenter>
+              <ContentPresenter.Resources>
+                <DataTemplate DataType="{x:Type model:STMLLibrary}">
+                    <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddChildElement}">+ Document</Button>
+                  </DataTemplate>
+                  <DataTemplate DataType="{x:Type model:STMLDocument}">
+                    
+                  <StackPanel Orientation="Horizontal">  
+                    <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddDictionary}">+ Dictionary</Button>
+                      <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddScript}">+ Script</Button>
+                    </StackPanel>
+                  </DataTemplate>
+                  <DataTemplate DataType="{x:Type model:STMLDictionary}">
+                    <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddChildElement}">+ Term</Button>
+                  </DataTemplate>
+                  <DataTemplate DataType="{x:Type model:STMLScript}">
+                    <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddChildElement}">+ Expression</Button>
+                  </DataTemplate>
+                  <DataTemplate DataType="{x:Type model:STMLTerm}">
+
+                  </DataTemplate>
+                  <DataTemplate DataType="{x:Type model:STMLExpression}">
+
+                  </DataTemplate>
+
+                </ContentPresenter.Resources>
+              </ContentPresenter>
+
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+
+    <Style TargetType="vm:ExpressionControl">
         <Setter Property="Template">
           <Setter.Value>
-            <ControlTemplate TargetType="vm:EditableText">
-              <Border Name="TextBorder" Padding="20" CornerRadius="10" BorderThickness="1" BorderBrush="#FFCECECE">
-                <StackPanel Orientation="Vertical">
-                <TextBox FontFamily="Courier New" Text="{Binding Header.Name, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" BorderThickness="0" Margin="0,0,0,10"/>
-                <TextBox FontFamily="Courier New" Text="{Binding Content, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" MinHeight="200" BorderThickness="0"/>
+            <ControlTemplate TargetType="vm:ExpressionControl">
+              <Border Name="TextBorder"  Padding="10" CornerRadius="10" BorderThickness="1" BorderBrush="{DynamicResource DocSecondaryForeground}" >
+                <StackPanel Orientation="Vertical" >
+                  
+                  <Grid Background="#00000000">
+                    <TextBox HorizontalAlignment="Left" FontSize="11" Text="{Binding Header.Name, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" BorderThickness="0" Foreground="{DynamicResource DocSecondaryForeground}" MinWidth="50"/>
+                    <TextBox HorizontalAlignment="Right" FontSize="11" Text="{Binding Style, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" BorderThickness="0" Foreground="{DynamicResource DocSecondaryForeground}" MinWidth="50"/>
+                  </Grid>
+                
+                  <Separator Background="{DynamicResource DocSecondaryForeground}" Margin="0,5,0,10" />
+                  <TextBlock Foreground="{DynamicResource DocPrimaryForeground}" FontFamily="Courier New" Text="{Binding Narrator}" HorizontalAlignment="Center" Margin="0,0,0,10" />
+                  <TextBox FontFamily="Courier New" Text="{Binding Content, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" MinHeight="50" BorderThickness="0"/>
                 </StackPanel>
               </Border>
             </ControlTemplate>
           </Setter.Value>
         </Setter>
       </Style>
-    </Application.Resources>
+
+      <!-- TODO: layout -->
+      <Style TargetType="vm:TermControl">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="vm:TermControl">
+              <Border Name="TextBorder" Padding="10" CornerRadius="5" BorderThickness="0.5" BorderBrush="LightGray">
+                <StackPanel Orientation="Vertical">
+                  <TextBox Text="{Binding Header.Name, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" BorderThickness="0" Foreground="Gray"/>
+                  <Separator Background="LightGray" Margin="0,5,0,10" />
+                  <TextBox FontFamily="Courier New" Text="{Binding Content, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" MinWidth="150" Padding="3"/>
+                </StackPanel>
+              </Border>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <!-- TODO: completely WIP-->
+      <Style TargetType="vm:VariableControl">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="vm:VariableControl">
+              <Border >
+
+              </Border>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+    <Style TargetType="vm:SettingElement">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="vm:SettingElement">
+              <Grid Margin="0,2,0,2">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="80"/>
+                  <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+              <ContentPresenter Grid.Column="0" Content="{TemplateBinding Label}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+              <ContentPresenter Grid.Column="1" Content="{TemplateBinding Value}" />
+            </Grid>
+          </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+    <Style TargetType="vm:STMLSettingsControl">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="vm:STMLSettingsControl">
+              <StackPanel Orientation="Vertical">
+                <ContentPresenter>
+                  <ContentPresenter.Resources>
+                    <DataTemplate DataType="{x:Type model:STMLElement}">
+                      <StackPanel Orientation="Vertical">
+
+                      <vm:SettingElement>
+                        <vm:SettingElement.Label>
+                          <TextBlock Text="Name" />
+                        </vm:SettingElement.Label>
+                        <vm:SettingElement.Value>
+                          <TextBox Text="{Binding Header.Name, UpdateSourceTrigger=PropertyChanged}"/>
+                        </vm:SettingElement.Value>
+                      </vm:SettingElement>
+
+                      <vm:SettingElement>
+                        <vm:SettingElement.Label>
+                          <TextBlock Text="ID" />
+                        </vm:SettingElement.Label>
+                        <vm:SettingElement.Value>
+                          <TextBox Text="{Binding Header.ID, UpdateSourceTrigger=PropertyChanged}"/>
+                        </vm:SettingElement.Value>
+                      </vm:SettingElement>
+
+                      <vm:SettingElement>
+                        <vm:SettingElement.Label>
+                          <TextBlock Text="Comments" />
+                        </vm:SettingElement.Label>
+                        <vm:SettingElement.Value>
+                          <TextBox Text="{Binding Header.Comments, UpdateSourceTrigger=PropertyChanged}" MinHeight="100"/>
+                        </vm:SettingElement.Value>
+                      </vm:SettingElement>
+
+                      </StackPanel>
+                    </DataTemplate>
+                  </ContentPresenter.Resources>
+                </ContentPresenter>
+
+
+                <Separator Background="LightGray" Margin="0,5,0,10" />
+
+                <ContentPresenter>
+                  <ContentPresenter.Resources>
+
+                    <DataTemplate DataType="{x:Type model:STMLLibrary}">
+                      <vm:SettingElement>
+                        <vm:SettingElement.Label>
+                          <TextBlock Text="Language"/>
+                        </vm:SettingElement.Label>
+                        <vm:SettingElement.Value>
+                        <ComboBox ItemsSource="{Binding AllLanguages}" SelectedValue="{Binding Language, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource languageConverter}}"/>
+                        </vm:SettingElement.Value>
+                      </vm:SettingElement>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type model:STMLDocument}">
+                    
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type model:STMLSection}">
+
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type model:STMLTerm}">
+                    
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type model:STMLExpression}">
+                      <StackPanel>
+                        <vm:SettingElement>
+                          <vm:SettingElement.Label>
+                            <TextBlock Text="Narrator"/>
+                          </vm:SettingElement.Label>
+                          <vm:SettingElement.Value>
+                            <TextBox Text="{Binding Narrator, UpdateSourceTrigger=PropertyChanged}"/>
+                          </vm:SettingElement.Value>
+                        </vm:SettingElement>
+                        <vm:SettingElement>
+                          <vm:SettingElement.Label>
+                            <TextBlock Text="Style"/>
+                          </vm:SettingElement.Label>
+                          <vm:SettingElement.Value>
+                            <TextBox Text="{Binding Style, UpdateSourceTrigger=PropertyChanged}"/>
+                          </vm:SettingElement.Value>
+                        </vm:SettingElement>
+                      </StackPanel>
+                    </DataTemplate>
+
+                  </ContentPresenter.Resources>
+                </ContentPresenter>
+
+              </StackPanel>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+  </Application.Resources>
 </Application>

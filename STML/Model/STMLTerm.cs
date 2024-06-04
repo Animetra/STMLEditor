@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace STMLEditor.Model
+namespace STML.Model
 {
     public class STMLTerm : STMLText
     {
-
+        public STMLTerm(STMLDictionary parent) : base(parent)
+        {
+            Header = new STMLHeader("New Term");
+        }
     }
 }
