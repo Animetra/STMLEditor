@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml;
 using System.Reflection;
+using System.IO;
 
 namespace STML.Model
 {
@@ -27,7 +25,7 @@ namespace STML.Model
 
             Directory.CreateDirectory(projectPath);
 
-            XmlWriterSettings xmlSettings = new();
+            XmlWriterSettings xmlSettings = new XmlWriterSettings();
             xmlSettings.OmitXmlDeclaration = true;
             xmlSettings.Indent = true;
 
@@ -84,27 +82,37 @@ namespace STML.Model
                                     new XElement("comments", document.Header.Comments)),
                                 new XElement("screentext", document.Children.Select(x =>
                                 {
-                                    string sectionName = "section";
-                                    string textName = "text";
                                     if (x is STMLDictionary dictionary)
                                     {
-                                        sectionName = "dictionary";
-                                        textName = "term";
+                                        return new XElement("dictionary", x.Children.Select(y =>
+                                                 new XElement("term",
+                                                     new XAttribute("name", y.Header.Name),
+                                                     new XAttribute("id", y.Header.ID),
+                                                     new XAttribute("comments", y.Header.Comments),
+                                                     new XAttribute("referenceName", ((STMLTerm)y).ReferenceName),
+                                                     ((STMLTerm)y).Content.Plain)),
+                                                 new XAttribute("name", x.Header.Name),
+                                                 new XAttribute("id", x.Header.ID),
+                                                 new XAttribute("comments", x.Header.Comments));
                                     }
                                     else if (x is STMLScript script)
                                     {
-                                        sectionName = "script";
-                                        textName = "expression";
+                                        return new XElement("script", x.Children.Select(y =>
+                                                 new XElement("expression",
+                                                     new XAttribute("name", y.Header.Name),
+                                                     new XAttribute("id", y.Header.ID),
+                                                     new XAttribute("comments", y.Header.Comments),
+                                                     new XAttribute("narrator", ((STMLExpression)y).Narrator.Plain),
+                                                     new XAttribute("style", ((STMLExpression)y).Style),
+                                                     ((STMLExpression)y).Content.Plain)),
+                                                 new XAttribute("name", x.Header.Name),
+                                                 new XAttribute("id", x.Header.ID),
+                                                 new XAttribute("comments", x.Header.Comments));
                                     }
-                                    
-                                    return new XElement(sectionName, x.Children.Select(y =>
-                                                    new XElement(textName,
-                                                        new XAttribute("name", y.Header.Name),
-                                                        new XAttribute("id", y.Header.ID),
-                                                        new XAttribute("comments", y.Header.Comments))),
-                                                    new XAttribute("name", x.Header.Name),
-                                                    new XAttribute("id", x.Header.ID),
-                                                    new XAttribute("comments", x.Header.Comments));
+                                    else
+                                    {
+                                        throw new InvalidOperationException("object type not known");
+                                    }
                                 }))));
 
                         xDocument.Save(writer);

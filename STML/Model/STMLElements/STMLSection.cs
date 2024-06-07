@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace STML.Model
 {
-    public class STMLSection : STMLElement
+    public abstract class STMLSection : STMLElement
     {
         public STMLSection(STMLDocument parent) : base(parent)
         {

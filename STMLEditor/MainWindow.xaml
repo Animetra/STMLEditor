@@ -6,7 +6,7 @@
         xmlns:model="clr-namespace:STML.Model;assembly=STML"
         xmlns:vm="clr-namespace:STMLEditor.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1024" Background="{DynamicResource PrimaryBackground}">
+        Title="Animetra STML Editor" Height="700" Width="1024" Background="{DynamicResource PrimaryBackground}">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
@@ -87,29 +87,18 @@
           <StackPanel Grid.Row="0" Style="{DynamicResource Toolbar}" Orientation="Horizontal">
             <Button Click="NestInTag" Tag="b" FontWeight="Bold">b</Button>
             <Button Click="NestInTag" Tag="i" FontStyle="Italic">i</Button>
-            <ComboBox SelectedIndex="2">
-              <ComboBoxItem>
-                <Button Click="NestInTag" Tag="size value=&quot;verybig&quot;">Very Big</Button>
-              </ComboBoxItem>
-              <ComboBoxItem>
-                <Button Click="NestInTag" Tag="size value=&quot;biggerg&quot;">Bigger</Button>
-              </ComboBoxItem>
-              <ComboBoxItem>
-                <Button Click="NestInTag" Tag="size value=&quot;big&quot;">Big</Button>
-              </ComboBoxItem>
-              <ComboBoxItem>
-                <Button Click="NestInTag" Tag="size value=&quot;small&quot;">Small</Button>
-              </ComboBoxItem>
-              <ComboBoxItem>
-                <Button Click="NestInTag" Tag="size value=&quot;small&quot;">Smaller</Button>
-              </ComboBoxItem>
-              <ComboBoxItem>
-                <Button Click="NestInTag" Tag="size value=&quot;verysmall&quot;">Very Small</Button>
-              </ComboBoxItem>
+            <Button Click="NestInTag" Tag="style,12">Style</Button>
+            <Button Click="NestInTag" Tag="color,#FF0000">Color</Button>
+            <TextBlock Text="References:" Margin="10,0,10,0"/>
+            <ComboBox ItemsSource="{Binding SelectedElement.ParentLibrary.References}" MinWidth="100">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <Button Click="InsertRef" Tag="{Binding}" Content="{Binding ReferenceName}"/>
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
             </ComboBox>
-            <Button Click="NestInTag" Tag="b">&lt;color&gt;</Button>
 
-            
+
           </StackPanel>
 
           <ScrollViewer Grid.Row="1">
@@ -126,19 +115,13 @@
                     <DataTemplate DataType="{x:Type model:STMLTerm}">
                       <vm:TermControl STMLTerm="{Binding}" IsTabStop="False"/>
                     </DataTemplate>
-                    <DataTemplate DataType="{x:Type model:STMLVariable}">
-                      <vm:VariableControl Variable="{Binding}" IsTabStop="False"/>
-                    </DataTemplate>
                   </ItemsControl.Resources>
                 </ItemsControl>
               </StackPanel>
             </Border>
           </ScrollViewer>
           <Border Grid.Row="2" Style="{DynamicResource MainSection}" Padding="3">
-            <StackPanel Orientation="Horizontal">
-              <CheckBox IsChecked="{Binding IsEditorView}" Margin="0,0,10,0"/>
-              <TextBlock Text="Editor View"/>
-            </StackPanel>
+            <CheckBox IsChecked="{Binding IsEditorView}" Margin="0,0,10,0" Content="Editor View"/>
           </Border>
         </Grid>
       </Border>

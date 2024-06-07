@@ -13,7 +13,12 @@ namespace STMLEditor.ViewModel
     public class ExpressionControl : ContentControl
     {
         public STMLExpression STMLExpression { get; set; }
-        public bool IsEditorView { get; set; } // needs to be implemented in UI
+        private bool _isEditorView;
+        public bool IsEditorView
+        {
+            get => _isEditorView;
+            set { _isEditorView = value; /*if (!_isEditorView) { STMLExpression.Content.OnIsShown(); STMLExpression.Narrator.OnIsShown(); } */}
+        }
 
         public static readonly DependencyProperty STMLExpressionProperty =
         DependencyProperty.Register("STMLExpression", typeof(STMLExpression),

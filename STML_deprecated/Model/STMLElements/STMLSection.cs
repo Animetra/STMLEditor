@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace STML.Model
 {
-    public class STMLTerm : STMLText
+    public abstract class STMLSection : STMLElement
     {
-        public STMLTerm(STMLDictionary parent) : base(parent)
+        public STMLSection(STMLDocument parent) : base(parent)
         {
-            Header = new STMLHeader("New Term");
+            Header = new STMLHeader("New Section");
         }
     }
 }

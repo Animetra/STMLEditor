@@ -8,7 +8,7 @@ namespace STML.Model
     {
         public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
-        public ObservableCollection<STMLLibrary> Libraries { get; set; } = new ObservableCollection<STMLLibrary>();
+        public ObservableCollection<STMLLibrary> Libraries { get; set; } = new();
 
         public STMLProject()
         {

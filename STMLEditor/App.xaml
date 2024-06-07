@@ -10,7 +10,13 @@
 
     <!-- Converters -->
 
-    <c:LanguageCodeConverter x:Key="languageConverter"/>
+    <c:LanguageCodeConverter x:Key="LanguageConverter"/>
+    <c:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <c:BoolToVisibilityConverter x:Key="BoolToVisibilityConverterInverted" Invert="True"/>
+    <!--<c:TextToRichTextConverter x:Key="TextToRichTextConverter"/>-->
+    <c:BoolToNumberConverter x:Key="BoolTo01Converter" TrueValue="1" FalseValue="0"/>
+    <c:BoolToNumberConverter x:Key="BoolTo25Converter" TrueValue="5" FalseValue="2"/>
+    <c:BoolToNumberConverter x:Key="BoolTo210Converter" TrueValue="10" FalseValue="2"/>
 
     <!-- Style Sheet -->
     <Color x:Key="Endless Void">#303030</Color>
@@ -216,19 +222,21 @@
     <Style TargetType="vm:ExpressionControl">
         <Setter Property="Template">
           <Setter.Value>
-            <ControlTemplate TargetType="vm:ExpressionControl">
-              <Border Name="TextBorder"  Padding="10" CornerRadius="10" BorderThickness="1" BorderBrush="{DynamicResource DocSecondaryForeground}" >
-                <StackPanel Orientation="Vertical" >
+          <ControlTemplate TargetType="vm:ExpressionControl">
+            <Border Name="TextBorder"  Padding="{TemplateBinding IsEditorView, Converter={StaticResource BoolTo210Converter}}" CornerRadius="10" BorderThickness="{TemplateBinding IsEditorView, Converter={StaticResource BoolTo01Converter}}" BorderBrush="{DynamicResource DocSecondaryForeground}" Margin="{TemplateBinding IsEditorView, Converter={StaticResource BoolTo25Converter}}">
+                <StackPanel Orientation="Vertical">
                   
                   <Grid Background="#00000000">
                     <TextBox HorizontalAlignment="Left" FontSize="11" Text="{Binding Header.Name, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" BorderThickness="0" Foreground="{DynamicResource DocSecondaryForeground}" MinWidth="50"/>
                     <TextBox HorizontalAlignment="Right" FontSize="11" Text="{Binding Style, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" BorderThickness="0" Foreground="{DynamicResource DocSecondaryForeground}" MinWidth="50"/>
                   </Grid>
+
+                <Separator Visibility ="{TemplateBinding IsEditorView, Converter={StaticResource BoolToVisibilityConverter}}" Background="{DynamicResource DocSecondaryForeground}" Margin="0,5,0,10" />
                 
-                  <Separator Background="{DynamicResource DocSecondaryForeground}" Margin="0,5,0,10" />
-                  <TextBlock Foreground="{DynamicResource DocPrimaryForeground}" FontFamily="Courier New" Text="{Binding Narrator}" HorizontalAlignment="Center" Margin="0,0,0,10" />
-                  <TextBox FontFamily="Courier New" Text="{Binding Content, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" MinHeight="50" BorderThickness="0"/>
-                </StackPanel>
+                <TextBlock Foreground="{DynamicResource DocPrimaryForeground}" FontFamily="Courier New" Text="{Binding Narrator.Resolved, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Margin="0,0,0,10" />
+                <TextBox Visibility ="{TemplateBinding IsEditorView, Converter={StaticResource BoolToVisibilityConverter}}" FontFamily="Courier New" Text="{Binding Content.Plain, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" MinHeight="50" BorderThickness="0" IsUndoEnabled="True" AcceptsReturn="True" AcceptsTab="False" AutoWordSelection="True" IsReadOnly="False"/>
+                <TextBox Visibility ="{TemplateBinding IsEditorView, Converter={StaticResource BoolToVisibilityConverterInverted}}" FontFamily="Courier New" Text="{Binding Content.Formatted, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" TextWrapping="Wrap" MinHeight="50" BorderThickness="0"/>
+              </StackPanel>
               </Border>
             </ControlTemplate>
           </Setter.Value>
@@ -236,34 +244,21 @@
       </Style>
 
       <!-- TODO: layout -->
-      <Style TargetType="vm:TermControl">
-        <Setter Property="Template">
-          <Setter.Value>
-            <ControlTemplate TargetType="vm:TermControl">
-              <Border Name="TextBorder" Padding="10" CornerRadius="5" BorderThickness="0.5" BorderBrush="LightGray">
-                <StackPanel Orientation="Vertical">
-                  <TextBox Text="{Binding Header.Name, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" BorderThickness="0" Foreground="Gray"/>
-                  <Separator Background="LightGray" Margin="0,5,0,10" />
-                  <TextBox FontFamily="Courier New" Text="{Binding Content, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" MinWidth="150" Padding="3"/>
-                </StackPanel>
-              </Border>
-            </ControlTemplate>
-          </Setter.Value>
-        </Setter>
-      </Style>
-
-      <!-- TODO: completely WIP-->
-      <Style TargetType="vm:VariableControl">
-        <Setter Property="Template">
-          <Setter.Value>
-            <ControlTemplate TargetType="vm:VariableControl">
-              <Border >
-
-              </Border>
-            </ControlTemplate>
-          </Setter.Value>
-        </Setter>
-      </Style>
+    <Style TargetType="vm:TermControl">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="vm:TermControl">
+            <Border Name="TextBorder" Padding="10" Margin="5" CornerRadius="5" BorderThickness="1" BorderBrush="{DynamicResource DocSecondaryForeground}">
+              <StackPanel Orientation="Vertical">
+                <TextBox Text="{Binding Header.Name, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" BorderThickness="0" Foreground="Gray"/>
+                <Separator Background="{DynamicResource DocSecondaryForeground}" Margin="0,5,0,10" />
+                <TextBox FontFamily="Courier New" Text="{Binding Content.Plain, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" MinWidth="150" Padding="3"/>
+              </StackPanel>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
 
     <Style TargetType="vm:SettingElement">
         <Setter Property="Template">
@@ -306,7 +301,7 @@
                           <TextBlock Text="ID" />
                         </vm:SettingElement.Label>
                         <vm:SettingElement.Value>
-                          <TextBox Text="{Binding Header.ID, UpdateSourceTrigger=PropertyChanged}"/>
+                          <TextBlock Text="{Binding Header.ID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                         </vm:SettingElement.Value>
                       </vm:SettingElement>
 
@@ -324,7 +319,6 @@
                   </ContentPresenter.Resources>
                 </ContentPresenter>
 
-
                 <Separator Background="LightGray" Margin="0,5,0,10" />
 
                 <ContentPresenter>
@@ -336,7 +330,7 @@
                           <TextBlock Text="Language"/>
                         </vm:SettingElement.Label>
                         <vm:SettingElement.Value>
-                        <ComboBox ItemsSource="{Binding AllLanguages}" SelectedValue="{Binding Language, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource languageConverter}}"/>
+                        <ComboBox ItemsSource="{Binding AllLanguages}" SelectedValue="{Binding Language, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource LanguageConverter}}"/>
                         </vm:SettingElement.Value>
                       </vm:SettingElement>
                     </DataTemplate>
@@ -347,8 +341,15 @@
 
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type model:STMLTerm}">
-                    
-                    </DataTemplate>
+                      <vm:SettingElement>
+                        <vm:SettingElement.Label>
+                          <TextBlock Text="Reference Name"/>
+                        </vm:SettingElement.Label>
+                        <vm:SettingElement.Value>
+                          <TextBox Text="{Binding ReferenceName, UpdateSourceTrigger=LostFocus}"/>
+                        </vm:SettingElement.Value>
+                      </vm:SettingElement>
+                  </DataTemplate>
                     <DataTemplate DataType="{x:Type model:STMLExpression}">
                       <StackPanel>
                         <vm:SettingElement>
@@ -356,7 +357,7 @@
                             <TextBlock Text="Narrator"/>
                           </vm:SettingElement.Label>
                           <vm:SettingElement.Value>
-                            <TextBox Text="{Binding Narrator, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Text="{Binding Narrator.Plain, UpdateSourceTrigger=PropertyChanged}"/>
                           </vm:SettingElement.Value>
                         </vm:SettingElement>
                         <vm:SettingElement>

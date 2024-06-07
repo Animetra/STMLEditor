@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace STML.Model
 {
@@ -14,7 +9,11 @@ namespace STML.Model
             Header = new STMLHeader("New Document");
         }
 
-        public  STMLElement AddDictionary()
+        public override STMLElement? AddChild()
+        {
+            throw new InvalidOperationException($"Use AddDictionary or AddScript");
+        }
+        public STMLElement AddDictionary()
         {
             STMLDictionary child = new STMLDictionary(this);
             Children.Add(child);

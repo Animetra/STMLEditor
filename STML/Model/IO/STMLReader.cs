@@ -1,11 +1,7 @@
-﻿using STML.Model;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Xml.Linq;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using System;
 
 namespace STML.Model
 {
@@ -18,13 +14,11 @@ namespace STML.Model
             // TODO: Check integrity
             // TODO: ProjectFile
 
-
             // Contents
             string contentPath = Path.Combine(projectPath, Filenames.ContentFolderName);
 
             foreach (var folder in Directory.GetDirectories(contentPath))
             {
-                
                 // TODO: Check integrity
                 string libraryInfoPath = Path.Combine(folder, Filenames.LibraryInfoName);
                 XDocument libDoc;
@@ -34,13 +28,13 @@ namespace STML.Model
                     libDoc = XDocument.Load(reader);
                 }
 
-                STMLLibrary? newLibrary = null;
+                STMLLibrary? newLibrary = newProject.AddLibrary();
                 if (libDoc?.Root is XElement libraryRoot && libraryRoot.Element("header") is XElement libraryHeader)
                 {
-                    newLibrary = new STMLLibrary();
-                    newLibrary.Header.Name = libraryHeader.Element("name")?.Value ?? "{MISSING NAME}";
-                    newLibrary.Header.ID = libraryHeader.Element("id")?.Value ?? "{MISSING ID}";
-                    newLibrary.Header.Comments = libraryHeader.Element("comments")?.Value ?? "";
+                    newLibrary.Header = new STMLHeader(
+                                            libraryHeader.Element("name")?.Value ?? "{MISSING NAME}",
+                                            libraryHeader.Element("id")?.Value ?? "{MISSING ID}",
+                                            libraryHeader.Element("comments")?.Value ?? "");
                     newLibrary.Language = libraryHeader.Element("language")?.Value ?? "";
                 }
                 else
@@ -48,21 +42,28 @@ namespace STML.Model
                     throw new Exception("File has no valid structure");
                 }
 
-                foreach (var document in Directory.GetFiles(folder).Where(x => x != libraryInfoPath))
+                foreach (var document in Directory.GetFiles(folder).Where(x => x != libraryInfoPath && Path.GetExtension(x) == ".xml"))
                 {
                     XDocument stmlDoc;
-
-                    using (var reader = new StreamReader(document))
+                    try
                     {
-                        stmlDoc = XDocument.Load(reader);
+                        using (var reader = new StreamReader(document))
+                        {
+                            stmlDoc = XDocument.Load(reader);
+                        }
+                    }
+                    catch
+                    {
+                        throw new Exception($"could not read file {document}.");
                     }
 
                     if (stmlDoc?.Element("root") is XElement documentRoot && documentRoot.Element("header") is XElement documentHeader && documentRoot.Element("screentext") is XElement documentScreentext)
                     {
                         STMLDocument newDocument = (STMLDocument)newLibrary.AddChild();
-                        newDocument.Header.Name = documentHeader.Element("name")?.Value ?? "{MISSING NAME}";
-                        newDocument.Header.ID = documentHeader.Element("id")?.Value ?? "{MISSING ID}";
-                        newDocument.Header.Comments = documentHeader.Element("comments")?.Value ?? "";
+                        newDocument.Header = new STMLHeader(
+                                                documentHeader.Element("name")?.Value ?? "{MISSING NAME}",
+                                                documentHeader.Element("id")?.Value ?? "{MISSING ID}",
+                                                documentHeader.Element("comments")?.Value ?? "");
 
                         foreach (XElement section in documentScreentext.Elements())
                         {
@@ -76,21 +77,29 @@ namespace STML.Model
                                 newSection = (STMLSection)newDocument.AddScript();
                             }
 
-                            newSection!.Header.Name = section.Attribute("name")?.Value ?? "{MISSING NAME}";
-                            newSection!.Header.ID = section.Attribute("id")?.Value ?? "{MISSING ID}";
-                            newSection!.Header.Comments = section.Attribute("comments")?.Value ?? "";
+                            newSection!.Header = new STMLHeader(
+                                                    section.Attribute("name")?.Value ?? "{MISSING NAME}",
+                                                    section.Attribute("id")?.Value ?? "{MISSING ID}",
+                                                    section.Attribute("comments")?.Value ?? "");
 
                             foreach (XElement text in section.Elements())
                             {
-                                STMLText newText = (STMLText)newSection.AddChild();
-                                newText.Header.Name = text.Attribute("name")?.Value ?? "{MISSING NAME}";
-                                newText.Header.ID = text.Attribute("id")?.Value ?? "{MISSING ID}";
-                                newText.Header.Comments = text.Attribute("comments")?.Value ?? "";
-                                newText.Content = text.Value;
+                                STMLElement newText = newSection.AddChild();
+                                newText.Header = new STMLHeader(
+                                                    text.Attribute("name")?.Value ?? "{MISSING NAME}",
+                                                    text.Attribute("id")?.Value ?? "{MISSING ID}",
+                                                    text.Attribute("comments")?.Value ?? "");
+
+                                if (newText is STMLTerm term)
+                                {
+                                    term.Content = new STMLString(text.Value);
+                                    term.ReferenceName = text.Attribute("referenceName")?.Value ?? "";
+                                }
 
                                 if (newText is STMLExpression expression)
                                 {
-                                    expression.Narrator = text.Attribute("narrator")?.Value ?? "";
+                                    expression.Content = new STMLFormattableString(text.Value, expression, null);
+                                    expression.Narrator = new STMLFormattableString(text.Attribute("narrator")?.Value ?? "", expression, null);
                                     expression.Style = text.Attribute("style")?.Value ?? "";
                                 }
                             }
@@ -101,8 +110,6 @@ namespace STML.Model
                         throw new Exception($"File has no valid structure: {document}");
                     }
                 }
-
-                newProject.AddLibrary();
             }
 
             return newProject;

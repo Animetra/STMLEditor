@@ -1,20 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Xml;
-using System.Windows.Media.Converters;
-using System.IO.Enumeration;
+﻿using System.IO;
 using Microsoft.Win32;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text.Json;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows;
-using System.Linq.Expressions;
 using STML.Model;
 
 namespace STMLEditor.Model

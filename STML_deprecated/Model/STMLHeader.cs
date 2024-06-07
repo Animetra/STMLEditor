@@ -1,4 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace STML.Model
 {
@@ -11,7 +18,7 @@ namespace STML.Model
         public STMLHeader(string name = "New STML Element", string id = "", string comments = "")
         { 
             Name = name;
-            ID = id is null || id == "" ? Guid.NewGuid().ToString() : id;
+            ID = id is null or "" ? Guid.NewGuid().ToString() : id;
             Comments = comments;
         }
     }

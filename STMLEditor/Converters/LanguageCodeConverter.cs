@@ -1,9 +1,11 @@
 ﻿using STMLEditor.Model;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace STMLEditor.Converters
 {
+    [ValueConversion(typeof(string), typeof(string))]
     internal class LanguageCodeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

@@ -5,13 +5,10 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using STML.Model;
-using System.Diagnostics.Tracing;
-using System.ComponentModel.Design;
 
 namespace STMLEditor
 {
@@ -39,14 +36,19 @@ namespace STMLEditor
             set { _selectedElement = value; OnPropertyChanged(); }
         }
 
-        private ObservableCollection<object> _objectsInEditor;
-        public ObservableCollection<object> ObjectsInEditor
+        private ObservableCollection<IUsableInEditor> _objectsInEditor;
+        public ObservableCollection<IUsableInEditor> ObjectsInEditor
         {
             get => _objectsInEditor;
             set { _objectsInEditor = value; OnPropertyChanged(); }
         }
 
-        public bool IsEditorView { get; set; } = true;
+        private bool _isEditorView;
+        public bool IsEditorView
+        {
+            get => _isEditorView;
+            set {_isEditorView = value; OnPropertyChanged(); }
+        }
 
         public ICommand AddLibrary { get; set; } 
         public ICommand AddDictionary { get; set; }
@@ -59,6 +61,8 @@ namespace STMLEditor
             AddDictionary = new Command(ExecuteAddDictionary);
             AddScript = new Command(ExecuteAddScript);
             AddChildElement = new Command(ExecuteAddChild);
+
+            IsEditorView = true;
 
             DataContext = this;
             ObjectsInEditor = new();
@@ -74,7 +78,6 @@ namespace STMLEditor
             ActiveProject = ThisApp.LoadProject();
             ActiveProject.Libraries.Add(new STMLLibrary());
             RefreshTextEditor();
-            // TODO: Doesn't work yet
         }
 
         private void Open(object sender, RoutedEventArgs e)
@@ -138,51 +141,48 @@ namespace STMLEditor
 
         private void RefreshTextEditor()
         {
-            if (SelectedElement is STMLLibrary library)
+            if (SelectedElement is STMLSection section)
             {
-                ObjectsInEditor = new ObservableCollection<object>(library.Variables);
+                ObjectsInEditor = new ObservableCollection<IUsableInEditor>(section.Children.Select(x => (IUsableInEditor)x));
             }
-            else if (SelectedElement is STMLSection section)
-            {
-                ObjectsInEditor = new ObservableCollection<object>(section.Children.Select(x => (STMLText)x));
-            }
-            else if (SelectedElement is STMLText text)
+            else if (SelectedElement is IUsableInEditor text)
             {
                 ObjectsInEditor = [text];
             }
         }
 
-        private void InsertTag(object sender, RoutedEventArgs e)
+        private void InsertRef(object sender, RoutedEventArgs e)
         {
-            string tag = ((Button)sender).Tag.ToString();
+            STMLTerm? term = ((Button)sender).Tag as STMLTerm ?? throw new InvalidOperationException("referenced object is not a term");
             IInputElement focusedControl = Keyboard.FocusedElement;
-
-            Debug.Write("Type: " + focusedControl.GetType().ToString());
 
             if (focusedControl is TextBox textbox)
             {
-                textbox.SelectedText = $"<{tag}/>";
+                textbox.SelectedText = textbox.SelectedText.NestInSTMLTags("ref", term.ReferenceName);
             }
         }
 
         private void NestInTag(object sender, RoutedEventArgs e)
         {
-            string tag = ((Button)sender).Tag.ToString();
-            string endTag = tag;
-            int endOfTagName = tag.IndexOf(" ");
-            if (tag.IndexOf(" ") is not -1)
+            string? toNestIn = ((Button)sender).Tag.ToString();
+
+            if (toNestIn is not ("" or null))
             {
-                endTag = tag.Substring(0, endOfTagName);
-            }
+                string[] toNestInArray = toNestIn.Split(",");
+                string tag = toNestInArray[0];
+                string? value = toNestInArray.Count() > 1 ? toNestInArray[1] : null;
 
-            IInputElement focusedControl = Keyboard.FocusedElement;
+                IInputElement focusedControl = Keyboard.FocusedElement;
 
-            Debug.Write("Type: " + focusedControl.GetType().ToString());
+                if (focusedControl is TextBox textbox)
+                {
+                    textbox.SelectedText = value is not null ? textbox.SelectedText.NestInSTMLTags(tag, value) : textbox.SelectedText.NestInTags(tag);
+                    if (value is not null)
+                    {
+                        textbox.Select(textbox.SelectionStart + tag.Length + 9, value.Length);
 
-            if (focusedControl is TextBox textbox)
-            {
-                string text = textbox.SelectedText;
-                textbox.SelectedText = $"<{tag}>{text}</{endTag}>";
+                    }
+                }
             }
         }
 

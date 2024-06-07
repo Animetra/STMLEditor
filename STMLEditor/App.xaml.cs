@@ -23,7 +23,7 @@ namespace STMLEditor
             set { _currentProject = value; OnPropertyChanged(); }
         }
 
-        public STMLProject LoadProject(STMLProject projectToLoad = null)
+        public STMLProject LoadProject(STMLProject? projectToLoad = null)
         {
             CurrentProject = projectToLoad ?? new STMLProject();
             return CurrentProject;
