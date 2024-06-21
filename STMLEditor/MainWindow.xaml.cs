@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using STML.Model;
 
+
 namespace STMLEditor
 {
     public partial class MainWindow:
@@ -50,6 +51,12 @@ namespace STMLEditor
             set {_isEditorView = value; OnPropertyChanged(); }
         }
 
+        public ICommand NewProject { get; set; }
+        public ICommand OpenProject { get; set; }
+        public ICommand SaveProject { get; set; }
+        public ICommand SaveAsProject { get; set; }
+        public ICommand Quit { get; set; }
+
         public ICommand AddLibrary { get; set; } 
         public ICommand AddDictionary { get; set; }
         public ICommand AddScript { get; set; }
@@ -57,6 +64,13 @@ namespace STMLEditor
 
         public MainWindow()
         {
+
+            NewProject = new Command(ExecuteNewProject);
+            OpenProject = new Command(ExecuteOpenProject);
+            SaveProject = new Command(ExecuteSaveProject);
+            SaveAsProject = new Command(ExecuteSaveAsProject);
+            Quit = new Command(ExecuteQuit);
+
             AddLibrary = new Command(ExecuteAddLibrary);
             AddDictionary = new Command(ExecuteAddDictionary);
             AddScript = new Command(ExecuteAddScript);
@@ -70,28 +84,27 @@ namespace STMLEditor
             ObjectsInEditor.CollectionChanged += CollectionChanged;
             InitializeComponent();
 
-            New(null, null);
+            ExecuteNewProject();
         }
 
-        private void New(object sender, RoutedEventArgs e)
+        private void ExecuteNewProject()
         {
             ActiveProject = ThisApp.LoadProject();
             ActiveProject.Libraries.Add(new STMLLibrary());
             RefreshTextEditor();
         }
 
-        private void Open(object sender, RoutedEventArgs e)
+        private void ExecuteOpenProject()
         {
             ActiveProject = FileHandling.Open();
             RefreshTextEditor();
         }
         
-        private void Save(object sender, RoutedEventArgs e) => FileHandling.Save();
-        
-        private void SaveAs(object sender, RoutedEventArgs e) => FileHandling.SaveAs();
-        
+        private void ExecuteSaveProject() => FileHandling.Save();
 
-        private void Exit(object sender, RoutedEventArgs e)
+        private void ExecuteSaveAsProject() => FileHandling.SaveAs();
+        
+        private void ExecuteQuit()
         {
             if (FileHandling.Status is SaveStatus.UnsavedChanges)
             {

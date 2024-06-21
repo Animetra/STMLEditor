@@ -11,7 +11,7 @@ using STML.Model;
 namespace STMLEditor.ViewModel
 {
     public class ExpressionControl : ContentControl
-    {
+    {   
         public STMLExpression STMLExpression { get; set; }
         private bool _isEditorView;
         public bool IsEditorView

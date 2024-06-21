@@ -4,9 +4,9 @@
              xmlns:model="clr-namespace:STML.Model;assembly=STML"
              xmlns:vm="clr-namespace:STMLEditor.ViewModel"
              xmlns:c="clr-namespace:STMLEditor.Converters"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              StartupUri="MainWindow.xaml">
-
-    <Application.Resources>
+  <Application.Resources>
 
     <!-- Converters -->
 
@@ -27,7 +27,9 @@
     <Color x:Key="Excitingly Boring">#B0B0B0</Color>
     <Color x:Key="Wannabe White">#E0E0E0</Color>
     <Color x:Key="Tabula Rasa">#787878</Color>
-    <Color x:Key="Narcisstic Purple">#E07000</Color>
+    <Color x:Key="Narcisstic Orange">#E07000</Color>
+    <Color x:Key="Periodic Red">#F03000</Color>
+    <Color x:Key="Mold Green">#30F000</Color>
     <Color x:Key="Soul">#000000</Color>
 
     <SolidColorBrush x:Key="PrimaryBackground" Color="{DynamicResource Endless Void}"/>
@@ -41,11 +43,9 @@
     <SolidColorBrush x:Key="DocPrimaryForeground" Color="{DynamicResource Soul}"/>
     <SolidColorBrush x:Key="DocSecondaryForeground" Color="{DynamicResource Glimmer Of Hope}"/>
     <SolidColorBrush x:Key="EmptyCanvas" Color="{DynamicResource Tabula Rasa}" />
-    <SolidColorBrush x:Key="Accent" Color="{DynamicResource Narcisstic Purple}" />
-
-    <Style TargetType="Grid">
-      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
-    </Style>
+    <SolidColorBrush x:Key="Accent" Color="{DynamicResource Narcisstic Orange}" />
+    <SolidColorBrush x:Key="Negative" Color="{DynamicResource Periodic Red}" />
+    <SolidColorBrush x:Key="Positive" Color="{DynamicResource Mold Green}" />
 
     <Style TargetType="Border" x:Key="MainSection">
       <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
@@ -95,9 +95,22 @@
       <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
     </Style>
 
+    <Style TargetType="MenuItem">
+      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
+    </Style>
+
     <Style TargetType="TreeView">
-      <Setter Property="Background" Value="{DynamicResource SecondaryBackground}"/>
+      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
       <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style TargetType="TreeViewItem">
+      <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Style.Resources>
+        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="{DynamicResource Narcisstic Orange}" />
+        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="{DynamicResource Glimmer Of Hope}" />
+      </Style.Resources>
     </Style>
 
     <Style TargetType="StackPanel" x:Key="Toolbar">
@@ -163,7 +176,7 @@
                   <Setter.Value>
                     <LinearGradientBrush StartPoint="0.52 1" EndPoint="0.48 0">
                       <GradientStop Offset="0" Color="{StaticResource Glimmer Of Hope}"/>
-                      <GradientStop Offset="1" Color="{StaticResource Narcisstic Purple}"/>
+                      <GradientStop Offset="1" Color="{StaticResource Narcisstic Orange}"/>
                     </LinearGradientBrush>
                   </Setter.Value>
                 </Setter>
@@ -188,20 +201,45 @@
             <ContentPresenter>
               <ContentPresenter.Resources>
                 <DataTemplate DataType="{x:Type model:STMLLibrary}">
-                    <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddChildElement}">+ Document</Button>
+                  <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddChildElement}" ToolTip="Add Document">
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="+" Margin="0,0,5,0"/>
+                      <iconPacks:PackIconLucide Kind="BookText" Foreground="{DynamicResource BrightForeground}"/>
+                    </StackPanel>
+                  </Button>
                   </DataTemplate>
                   <DataTemplate DataType="{x:Type model:STMLDocument}">
                     
-                  <StackPanel Orientation="Horizontal">  
-                    <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddDictionary}">+ Dictionary</Button>
-                      <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddScript}">+ Script</Button>
+                  <StackPanel Orientation="Horizontal">
+                    <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddDictionary}" ToolTip="Add Dictionary">
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="+" Margin="0,0,5,0"/>
+                        <iconPacks:PackIconLucide Kind="List" Foreground="{DynamicResource BrightForeground}"/>
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddScript}" ToolTip="Add Script">
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="+" Margin="0,0,5,0"/>
+                        <iconPacks:PackIconLucide Kind="ScrollText" Foreground="{DynamicResource BrightForeground}"/>
+                      </StackPanel>
+                    </Button>
                     </StackPanel>
                   </DataTemplate>
                   <DataTemplate DataType="{x:Type model:STMLDictionary}">
-                    <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddChildElement}">+ Term</Button>
+                  <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddChildElement}" ToolTip="Add Term">
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="+" Margin="0,0,5,0"/>
+                      <iconPacks:PackIconLucide Kind="CaseSensitive" Foreground="{DynamicResource BrightForeground}"/>
+                    </StackPanel>
+                  </Button>
                   </DataTemplate>
                   <DataTemplate DataType="{x:Type model:STMLScript}">
-                    <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddChildElement}">+ Expression</Button>
+                  <Button Command="{Binding ElementName=TreeViewMenu, Path=DataContext.AddChildElement}" ToolTip="Add Expression">
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="+" Margin="0,0,5,0"/>
+                      <iconPacks:PackIconLucide Kind="MessageSquareText" Foreground="{DynamicResource BrightForeground}"/>
+                    </StackPanel>
+                  </Button>
                   </DataTemplate>
                   <DataTemplate DataType="{x:Type model:STMLTerm}">
 
@@ -223,6 +261,7 @@
         <Setter Property="Template">
           <Setter.Value>
           <ControlTemplate TargetType="vm:ExpressionControl">
+
             <Border Name="TextBorder"  Padding="{TemplateBinding IsEditorView, Converter={StaticResource BoolTo210Converter}}" CornerRadius="10" BorderThickness="{TemplateBinding IsEditorView, Converter={StaticResource BoolTo01Converter}}" BorderBrush="{DynamicResource DocSecondaryForeground}" Margin="{TemplateBinding IsEditorView, Converter={StaticResource BoolTo25Converter}}">
                 <StackPanel Orientation="Vertical">
                   
@@ -231,13 +270,15 @@
                     <TextBox HorizontalAlignment="Right" FontSize="11" Text="{Binding Style, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" BorderThickness="0" Foreground="{DynamicResource DocSecondaryForeground}" MinWidth="50"/>
                   </Grid>
 
-                <Separator Visibility ="{TemplateBinding IsEditorView, Converter={StaticResource BoolToVisibilityConverter}}" Background="{DynamicResource DocSecondaryForeground}" Margin="0,5,0,10" />
+                  <Separator Visibility ="{TemplateBinding IsEditorView, Converter={StaticResource BoolToVisibilityConverter}}" Background="{DynamicResource DocSecondaryForeground}" Margin="0,5,0,10" />
                 
-                <TextBlock Foreground="{DynamicResource DocPrimaryForeground}" FontFamily="Courier New" Text="{Binding Narrator.Resolved, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Margin="0,0,0,10" />
-                <TextBox Visibility ="{TemplateBinding IsEditorView, Converter={StaticResource BoolToVisibilityConverter}}" FontFamily="Courier New" Text="{Binding Content.Plain, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" MinHeight="50" BorderThickness="0" IsUndoEnabled="True" AcceptsReturn="True" AcceptsTab="False" AutoWordSelection="True" IsReadOnly="False"/>
-                <TextBox Visibility ="{TemplateBinding IsEditorView, Converter={StaticResource BoolToVisibilityConverterInverted}}" FontFamily="Courier New" Text="{Binding Content.Formatted, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" TextWrapping="Wrap" MinHeight="50" BorderThickness="0"/>
-              </StackPanel>
+                  <TextBlock Foreground="{DynamicResource DocPrimaryForeground}" FontFamily="Courier New" Text="{Binding Narrator.Resolved, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Margin="0,0,0,10" />
+                  
+                  <TextBox Visibility ="{TemplateBinding IsEditorView, Converter={StaticResource BoolToVisibilityConverter}}" FontFamily="Courier New" Text="{Binding Content.Plain, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" MinHeight="50" BorderThickness="0" IsUndoEnabled="True" AcceptsReturn="True" AcceptsTab="False" AutoWordSelection="True" IsReadOnly="False"/>
+                  <TextBox Visibility ="{TemplateBinding IsEditorView, Converter={StaticResource BoolToVisibilityConverterInverted}}" FontFamily="Courier New" Text="{Binding Content.Formatted, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" TextWrapping="Wrap" MinHeight="50" BorderThickness="0"/>
+                </StackPanel>
               </Border>
+
             </ControlTemplate>
           </Setter.Value>
         </Setter>

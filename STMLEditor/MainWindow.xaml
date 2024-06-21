@@ -5,8 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:model="clr-namespace:STML.Model;assembly=STML"
         xmlns:vm="clr-namespace:STMLEditor.ViewModel"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
         Title="Animetra STML Editor" Height="700" Width="1024" Background="{DynamicResource PrimaryBackground}">
+  
+  <Window.InputBindings>
+    <KeyBinding Key="N" Modifiers="Control" Command="{Binding NewProject}"/>
+    <KeyBinding Key="O" Modifiers="Control" Command="{Binding OpenProject}"/>
+    <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveProject}"/>
+  </Window.InputBindings>
+
+
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
@@ -21,19 +30,34 @@
 
       <Menu Grid.Column="0" Name="Menu" Margin="2,5,0,5">
         <MenuItem Header="File">
-          <MenuItem Header="New" Click="New"/>
-          <MenuItem Header="Open" Click="Open"/>
+          <MenuItem Header="New" Command="{Binding NewProject}" InputGestureText="Ctrl + N">
+            <MenuItem.Icon>
+              <iconPacks:PackIconLucide Kind="FilePlus2" Foreground="{DynamicResource BrightForeground}"/>
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Open" Command="{Binding OpenProject}" InputGestureText="Ctrl + O">
+            <MenuItem.Icon>
+              <iconPacks:PackIconLucide Kind="FolderOpen" Foreground="{DynamicResource BrightForeground}"/>
+            </MenuItem.Icon>
+          </MenuItem>
           <Separator/>
-          <MenuItem Header="Save" Click="Save"/>
-          <MenuItem Header="Save As" Click="SaveAs"/>
-          <Separator/>
-          <MenuItem Header="Exit" Click="Exit"/>
+          <MenuItem Header="Save" Command="{Binding SaveProject}" InputGestureText="Ctrl + S">
+            <MenuItem.Icon>
+              <iconPacks:PackIconLucide Kind="Save" Foreground="{DynamicResource BrightForeground}"/>
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Save As" Command="{Binding SaveAsProject}">
+          <MenuItem.Icon>
+            <iconPacks:PackIconLucide Kind="SaveAll" Foreground="{DynamicResource BrightForeground}"/>
+          </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Edit">
-          <MenuItem Header="Export" />
+        <Separator/>
+          <MenuItem Header="Quit" Command="{Binding Quit}" InputGestureText="Alt + F4">
+            <MenuItem.Icon>
+              <iconPacks:PackIconLucide Kind="LogOut" Foreground="{DynamicResource BrightForeground}"/>
+            </MenuItem.Icon>
+          </MenuItem>
         </MenuItem>
-        <MenuItem Header="Settings"/>
-        <MenuItem Header="View"/>
         <MenuItem Header="Info"/>
       </Menu>
     </Grid>
@@ -41,8 +65,10 @@
     <Grid Grid.Row="1" Name="MainArea">
       
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto" MinWidth="200"/>
-        <ColumnDefinition Width="Auto" MinWidth="200"/>
+        <ColumnDefinition Width="200" MinWidth="150"/>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="200" MinWidth="150"/>
+        <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
       <Border Grid.Column="0" Style="{StaticResource MainSection}">
@@ -54,16 +80,23 @@
           </Grid.RowDefinitions>
 
           <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <Button Command="{Binding AddLibrary}">+Library</Button>
-            <vm:TreeViewMenuControl x:Name="TreeViewMenu" Content="{Binding SelectedElement}" MinHeight="50"/>
-            <Button Click="RemoveElement">-</Button>
+            <Button Command="{Binding AddLibrary}" ToolTip="Add Library">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="+" Margin="0,0,5,0"/>
+                <iconPacks:PackIconLucide Kind="LibraryBig" Foreground="{DynamicResource BrightForeground}"/>
+              </StackPanel>
+            </Button>
+            <vm:TreeViewMenuControl x:Name="TreeViewMenu" Content="{Binding SelectedElement}" MinHeight="20"/>
+            <Button Click="RemoveElement" ToolTip="Remove Object">
+              <iconPacks:PackIconLucide Kind="Trash2" Foreground="{DynamicResource Negative}"/>
+            </Button>
           </StackPanel>
         
-          <TreeView Grid.Row="1" Name="ProjectTreeView" ItemsSource="{Binding ActiveProject.Libraries}" SelectedItemChanged="OnSelectedItemChanged">
+          <TreeView  Grid.Row="1" Name="ProjectTreeView" ItemsSource="{Binding ActiveProject.Libraries}" SelectedItemChanged="OnSelectedItemChanged" Padding="0">
             <TreeView.Resources>
               <HierarchicalDataTemplate ItemsSource="{Binding Path=Children}" DataType="{x:Type model:STMLElement}">
                 <DockPanel x:Name="TreeViewItem" LastChildFill="True">
-                  <TextBlock DockPanel.Dock="Left" Text="{Binding Path=Header.Name}" Margin="5, 5, 40, 5" IsHitTestVisible="False"/>
+                  <TextBlock DockPanel.Dock="Left" Text="{Binding Path=Header.Name}" Margin="5, 5, 5, 5" TextWrapping="Wrap" IsHitTestVisible="False"/>
                 </DockPanel>
               </HierarchicalDataTemplate>
             </TreeView.Resources>
@@ -72,11 +105,15 @@
         </Grid>
       </Border>
 
-      <Border Grid.Column="1" Name="Settings" Padding="10" Style="{DynamicResource MainSection}">
+      <GridSplitter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="{DynamicResource PrimaryBackground}" ShowsPreview="True" Width="3" Cursor="SizeWE"/>
+
+      <Border Grid.Column="2" Name="Settings" Padding="10" Style="{DynamicResource MainSection}">
         <vm:STMLSettingsControl Content="{Binding SelectedElement}"/>
       </Border>
+      
+      <GridSplitter Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="{DynamicResource PrimaryBackground}" ShowsPreview="True" Width="3"/>
 
-      <Border Grid.Column="2" Style="{DynamicResource MainSection}">
+      <Border Grid.Column="4" Style="{DynamicResource MainSection}">
         <Grid  Name="TextWindow" Background="{DynamicResource EmptyCanvas}">
           <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -85,10 +122,18 @@
           </Grid.RowDefinitions>
 
           <StackPanel Grid.Row="0" Style="{DynamicResource Toolbar}" Orientation="Horizontal">
-            <Button Click="NestInTag" Tag="b" FontWeight="Bold">b</Button>
-            <Button Click="NestInTag" Tag="i" FontStyle="Italic">i</Button>
-            <Button Click="NestInTag" Tag="style,12">Style</Button>
-            <Button Click="NestInTag" Tag="color,#FF0000">Color</Button>
+            <Button Click="NestInTag" Tag="b" FontWeight="Bold">
+              <iconPacks:PackIconLucide Kind="Bold" />
+            </Button>
+            <Button Click="NestInTag" Tag="i" FontStyle="Italic">
+              <iconPacks:PackIconLucide Kind="Italic" />
+            </Button>
+            <Button Click="NestInTag" Tag="style,MyStyleClass">
+              <iconPacks:PackIconLucide Kind="Palette" />
+            </Button>
+            <Button Click="NestInTag" Tag="color,#FF00FF">
+              <iconPacks:PackIconLucide Kind="PaintBucket" />
+            </Button>
             <TextBlock Text="References:" Margin="10,0,10,0"/>
             <ComboBox ItemsSource="{Binding SelectedElement.ParentLibrary.References}" MinWidth="100">
               <ComboBox.ItemTemplate>
@@ -101,7 +146,7 @@
 
           </StackPanel>
 
-          <ScrollViewer Grid.Row="1">
+          <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <Border Margin="50" Padding="50" Background="White" Height="Auto" MinHeight="200">
               <Border.Effect>
                 <DropShadowEffect BlurRadius="10" Direction="-45" ShadowDepth="5" Opacity="0.3"/>
