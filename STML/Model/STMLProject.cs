@@ -1,6 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Net.Http.Headers;
 
 namespace STML.Model
 {
@@ -8,19 +8,40 @@ namespace STML.Model
     {
         public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
-        public ObservableCollection<STMLLibrary> Libraries { get; set; } = new ObservableCollection<STMLLibrary>();
+        public ObservableCollection<string> ProjectLanguages { get; private set; } = new ObservableCollection<string>();
+        public string StandardLanguage { get; private set; }
+        public ObservableCollection<STMLDocument> Documents { get; set; } = new ObservableCollection<STMLDocument>();
 
         public STMLProject()
         {
-            Libraries.CollectionChanged += CollectionChanged;
+            ProjectLanguages.CollectionChanged += CollectionChanged;
+            Documents.CollectionChanged += CollectionChanged;
+            AddLanguage("en");
+            SetStandardLanguage("en");
         }
 
-        public STMLLibrary AddLibrary()
+        public STMLDocument AddDocument()
         {
-            STMLLibrary newLibrary = new STMLLibrary();
-            Libraries.Add(newLibrary);
-            return newLibrary;
+            STMLDocument newDocument = new STMLDocument();
+            Documents.Add(newDocument);
+            return newDocument;
+        }
+
+        public void AddLanguage(string languageCode)
+        {
+            ProjectLanguages.Add(languageCode);
+        }
+
+        public void SetStandardLanguage(string languageCode)
+        {
+            if (ProjectLanguages.Contains(languageCode))
+            {
+                StandardLanguage = languageCode;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Language is not set up as project language. Add {languageCode} to project first.");
+            }
         }
     }
-
 }

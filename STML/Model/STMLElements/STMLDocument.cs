@@ -4,7 +4,7 @@ namespace STML.Model
 {
     public class STMLDocument : STMLElement
     {
-        public STMLDocument(STMLLibrary parent) : base(parent)
+        public STMLDocument() : base(null)
         {
             Header = new STMLHeader("New Document");
         }

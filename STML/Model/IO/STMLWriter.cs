@@ -37,14 +37,14 @@ namespace STML.Model
                             new XElement("stml",
                                 new XAttribute("version", version)),
                             new XElement("libraries",
-                                project.Libraries.Select(x => new XElement("library", x.Header.ID)))));
+                                project.Documents.Select(x => new XElement("library", x.Header.ID)))));
 
                 xDocument.Save(writer);
             }
 
             Directory.CreateDirectory(contentPath);
 
-            foreach (STMLLibrary library in project.Libraries)
+            foreach (STMLLibrary library in project.Documents)
             {
                 string libraryPath = Path.Combine(contentPath, library.Header.ID);
                 Directory.CreateDirectory(libraryPath);

@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call PostBuild.bat $(TargetPath) C:\Users\PC\Projekte\Libraries\UnityPackages\PackageDevelopment\Packages\ScreenTexter\Runtime" />
+    <Exec Command="call PostBuild.bat $(TargetPath) D:\Projekte\LibraryDevelopment\PackageDevelopment\Packages\ScreenTexter\Runtime\" />
   </Target>
 
 </Project>

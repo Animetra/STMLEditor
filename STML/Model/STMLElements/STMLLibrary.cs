@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+﻿/*using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 
@@ -7,7 +7,8 @@ namespace STML.Model
     public class STMLLibrary : STMLElement
     {
         // TODO: definitely not the right location for that:
-        public static ObservableCollection<string> AllLanguages { get; set; } = new ObservableCollection<string>(CultureInfo.GetCultures(CultureTypes.NeutralCultures).Select(x => x.EnglishName)); 
+        public static ObservableCollection<string> AllLanguages { get; set; } = new ObservableCollection<string>(CultureInfo.GetCultures(CultureTypes.NeutralCultures).Select(x => x.EnglishName));
+        public ObservableCollection<string> LibraryLanguages
 
         public string Language { get; set; } = "en"; // ISO-639-1
 
@@ -46,4 +47,4 @@ namespace STML.Model
             return uniqueName;
         }
     }
-}
+}*/

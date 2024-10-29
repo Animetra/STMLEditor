@@ -7,19 +7,19 @@ namespace STML.Model
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected string _plain;
-        public virtual string Plain
+        private string? _plain;
+        public string? Plain
         {
             get => _plain;
-            set { _plain = value; }
+            set { _plain = value; OnPropertyChanged(); }
         }
 
-        public STMLString(string text = "")
+        public STMLString(string? text)
         {
             _plain = text;
         }
 
-        public static implicit operator string(STMLString input) { return input.Plain; }
+        public static implicit operator string(STMLString input) { return input?.Plain ?? "{Error: STMLString has no content.}"; }
 
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {

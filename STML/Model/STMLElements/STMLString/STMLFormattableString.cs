@@ -9,25 +9,21 @@ namespace STML.Model
         public ContentFormat? ContentFormat { get; set; }
         public STMLExpression? Expression { get; set; }
         public string[]? Styles => Expression?.GetActiveStyles();
-        public override string Plain
-        {
-            get => _plain;
-            set { _plain = value; OnPropertyChanged(); }
-        }
+
 
         private string _resolved;
         public string Resolved
         {
             get => _resolved;
             private set { _resolved = value; OnPropertyChanged(); }
-        
+
         }
 
         private string _formatted;
-        public string Formatted 
+        public string Formatted
         {
             get => _formatted;
-            private set { _formatted= value; OnPropertyChanged(); }
+            private set { _formatted = value; OnPropertyChanged(); }
         }
 
         public STMLFormattableString(string text = "", STMLExpression? expression = null, ContentFormat? format = null) : base(text)

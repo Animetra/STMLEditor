@@ -90,7 +90,7 @@ namespace STMLEditor
         private void ExecuteNewProject()
         {
             ActiveProject = ThisApp.LoadProject();
-            ActiveProject.Libraries.Add(new STMLLibrary());
+            ActiveProject.Documents.Add(new STMLLibrary());
             RefreshTextEditor();
         }
 
