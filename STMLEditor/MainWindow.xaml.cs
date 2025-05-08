@@ -1,19 +1,18 @@
-﻿using STMLEditor.Model;
+﻿using STML.Model;
+using STMLEditor.Model;
 using STMLEditor.ViewModel;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using STML.Model;
 
 
 namespace STMLEditor
 {
-    public partial class MainWindow:
+    public partial class MainWindow :
         Window,
         INotifyPropertyChanged,
         INotifyCollectionChanged
@@ -48,7 +47,7 @@ namespace STMLEditor
         public bool IsEditorView
         {
             get => _isEditorView;
-            set {_isEditorView = value; OnPropertyChanged(); }
+            set { _isEditorView = value; OnPropertyChanged(); }
         }
 
         public ICommand NewProject { get; set; }
@@ -57,10 +56,10 @@ namespace STMLEditor
         public ICommand SaveAsProject { get; set; }
         public ICommand Quit { get; set; }
 
-        public ICommand AddLibrary { get; set; } 
+        public ICommand AddDocument { get; set; }
         public ICommand AddDictionary { get; set; }
         public ICommand AddScript { get; set; }
-        public ICommand AddChildElement { get; set; } 
+        public ICommand AddChildElement { get; set; }
 
         public MainWindow()
         {
@@ -71,7 +70,7 @@ namespace STMLEditor
             SaveAsProject = new Command(ExecuteSaveAsProject);
             Quit = new Command(ExecuteQuit);
 
-            AddLibrary = new Command(ExecuteAddLibrary);
+            AddDictionary = new Command(ExecuteAddDocument);
             AddDictionary = new Command(ExecuteAddDictionary);
             AddScript = new Command(ExecuteAddScript);
             AddChildElement = new Command(ExecuteAddChild);
@@ -90,7 +89,7 @@ namespace STMLEditor
         private void ExecuteNewProject()
         {
             ActiveProject = ThisApp.LoadProject();
-            ActiveProject.Documents.Add(new STMLLibrary());
+            ActiveProject.AddChild();
             RefreshTextEditor();
         }
 
@@ -99,11 +98,11 @@ namespace STMLEditor
             ActiveProject = FileHandling.Open();
             RefreshTextEditor();
         }
-        
+
         private void ExecuteSaveProject() => FileHandling.Save();
 
         private void ExecuteSaveAsProject() => FileHandling.SaveAs();
-        
+
         private void ExecuteQuit()
         {
             if (FileHandling.Status is SaveStatus.UnsavedChanges)
@@ -113,10 +112,9 @@ namespace STMLEditor
 
             Application.Current.Shutdown();
         }
-
-        private void ExecuteAddLibrary()
+        private void ExecuteAddDocument()
         {
-            ActiveProject.AddLibrary();
+            ActiveProject.AddChild();
             RefreshTextEditor();
         }
 

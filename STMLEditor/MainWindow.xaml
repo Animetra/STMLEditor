@@ -8,15 +8,14 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
         Title="Animetra STML Editor" Height="700" Width="1024" Background="{DynamicResource PrimaryBackground}">
-  
-  <Window.InputBindings>
-    <KeyBinding Key="N" Modifiers="Control" Command="{Binding NewProject}"/>
-    <KeyBinding Key="O" Modifiers="Control" Command="{Binding OpenProject}"/>
-    <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveProject}"/>
-  </Window.InputBindings>
 
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Control" Command="{Binding NewProject}"/>
+        <KeyBinding Key="O" Modifiers="Control" Command="{Binding OpenProject}"/>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveProject}"/>
+    </Window.InputBindings>
 
-  <Grid>
+    <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
@@ -80,11 +79,11 @@
           </Grid.RowDefinitions>
 
           <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <Button Command="{Binding AddLibrary}" ToolTip="Add Library">
+            <Button Command="{Binding AddDocument}" ToolTip="Add Document">
               <StackPanel Orientation="Horizontal">
                 <TextBlock Text="+" Margin="0,0,5,0"/>
-                <iconPacks:PackIconLucide Kind="LibraryBig" Foreground="{DynamicResource BrightForeground}"/>
-              </StackPanel>
+                <iconPacks:PackIconLucide Kind="BookText" Foreground="{DynamicResource BrightForeground}"/>
+            </StackPanel>
             </Button>
             <vm:TreeViewMenuControl x:Name="TreeViewMenu" Content="{Binding SelectedElement}" MinHeight="20"/>
             <Button Click="RemoveElement" ToolTip="Remove Object">
@@ -92,7 +91,7 @@
             </Button>
           </StackPanel>
         
-          <TreeView  Grid.Row="1" Name="ProjectTreeView" ItemsSource="{Binding ActiveProject.Libraries}" SelectedItemChanged="OnSelectedItemChanged" Padding="0">
+          <TreeView  Grid.Row="1" Name="ProjectTreeView" ItemsSource="{Binding ActiveProject.Children}" SelectedItemChanged="OnSelectedItemChanged" Padding="0">
             <TreeView.Resources>
               <HierarchicalDataTemplate ItemsSource="{Binding Path=Children}" DataType="{x:Type model:STMLElement}">
                 <DockPanel x:Name="TreeViewItem" LastChildFill="True">

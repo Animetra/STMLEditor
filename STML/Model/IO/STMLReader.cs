@@ -1,12 +1,7 @@
-﻿using System.Xml.Linq;
-using System.IO;
-using System.Linq;
-using System;
-
-namespace STML.Model
+﻿namespace STML.Model
 {
     public class STMLReader
-    {
+    {/*
         public STMLProject ReadProject(string projectPath)
         {
             STMLProject newProject = new STMLProject();
@@ -113,6 +108,6 @@ namespace STML.Model
             }
 
             return newProject;
-        }
+        }*/
     }
 }

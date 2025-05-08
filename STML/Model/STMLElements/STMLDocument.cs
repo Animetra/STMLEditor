@@ -4,7 +4,7 @@ namespace STML.Model
 {
     public class STMLDocument : STMLElement
     {
-        public STMLDocument() : base(null)
+        public STMLDocument(STMLProject parent) : base(parent)
         {
             Header = new STMLHeader("New Document");
         }
@@ -13,6 +13,7 @@ namespace STML.Model
         {
             throw new InvalidOperationException($"Use AddDictionary or AddScript");
         }
+
         public STMLElement AddDictionary()
         {
             STMLDictionary child = new STMLDictionary(this);
@@ -20,6 +21,7 @@ namespace STML.Model
 
             return child;
         }
+
         public STMLElement AddScript()
         {
             STMLScript child = new STMLScript(this);
@@ -27,5 +29,6 @@ namespace STML.Model
 
             return child;
         }
+
     }
 }

@@ -1,19 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace STML.Model
 {
     public sealed class STMLTerm :
-        STMLElement,
-        IUsableInEditor
+        STMLElement
     {
         private string _referenceName;
         public string ReferenceName
         {
             get => _referenceName;
-            set { _referenceName = AddReferenceToLibrary(value); }
+            set { _referenceName = AddReferenceToProject(value); }
         }
 
-        public STMLString Content { get; set; } = new STMLString(null);
+        public STMLString ActiveLanguageContent => Content.GetContentOfActiveLanguage(ParentProject);
+        public Dictionary<string, STMLString> Content { get; set; } = new Dictionary<string, STMLString>();
 
         public STMLTerm(STMLDictionary parent) : base(parent)
         {
@@ -26,9 +27,9 @@ namespace STML.Model
             throw new InvalidOperationException("Terms can't have children");
         }
 
-        private string AddReferenceToLibrary(string name)
+        private string AddReferenceToProject(string name)
         {
-            return ParentLibrary.AddReference(name, this);
+            return ParentProject.AddReference(name, this);
         }
     }
 }

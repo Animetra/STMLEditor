@@ -1,10 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System;
 using System.Linq;
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace STML.Model
 {
@@ -17,9 +17,10 @@ namespace STML.Model
 
         public virtual STMLHeader Header { get; set; }
         public STMLElement Parent { get; set; }
-        public STMLLibrary ParentLibrary => GetAncestor<STMLLibrary>() ?? throw new InvalidOperationException("object has no parent library");
+        public STMLProject ParentProject => GetAncestor<STMLProject>() ?? throw new InvalidOperationException("object has no parent project");
         public STMLDocument ParentDocument => GetAncestor<STMLDocument>() ?? throw new InvalidOperationException("object has no parent document");
         public STMLSection ParentSection => GetAncestor<STMLSection>() ?? throw new InvalidOperationException("object has no parent section");
+
         public ObservableCollection<STMLElement> Children { get; set; } = new ObservableCollection<STMLElement>();
 
         public STMLElement(STMLElement parent)
@@ -55,8 +56,8 @@ namespace STML.Model
                         return result;
                     }
                 }
-            }   
-            
+            }
+
             return result;
         }
 
@@ -101,21 +102,6 @@ namespace STML.Model
             return (T?)ancestor;
         }
 
-
-        public void ResolveContent()
-        {
-            ForEachDescendantWhere(x => ((STMLExpression)x).Resolve(), x => x is STMLExpression);
-        }
-
-        public void FormatContent(ContentFormat format)
-        {
-            ForEachDescendantWhere(x => ((STMLExpression)x).Format(format), x => x is STMLExpression);
-        }
-
-        public void ResolveAndFormatContent(ContentFormat format)
-        {
-            ForEachDescendantWhere(x => ((STMLExpression)x).ResolveAndFormat(format), x => x is STMLExpression);
-        }
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

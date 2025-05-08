@@ -19,6 +19,11 @@ namespace STML.Model
             _plain = text;
         }
 
+        public virtual T? Clone<T>() where T : STMLString
+        {
+            return (T)new STMLString(Plain);
+        }
+
         public static implicit operator string(STMLString input) { return input?.Plain ?? "{Error: STMLString has no content.}"; }
 
         protected void OnPropertyChanged([CallerMemberName] string? name = null)

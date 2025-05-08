@@ -10,7 +10,7 @@ namespace STML.Model
             int index = 0;
             List<int> results = new List<int>();
 
-            while(result != -1)
+            while (result != -1)
             {
                 result = text.IndexOf(toFind, index);
                 if (result != -1)
@@ -30,7 +30,7 @@ namespace STML.Model
             {
                 int valueStart = text.IndexOf("\"", startIndex) + 1;
                 int valueEnd = text.IndexOf("\"", valueStart);
-                return valueStart != 0 && valueEnd != 0 && valueEnd > valueStart? text.Substring(valueStart, valueEnd - valueStart) : null;
+                return valueStart != 0 && valueEnd != 0 && valueEnd > valueStart ? text.Substring(valueStart, valueEnd - valueStart) : null;
             }
             else
             {
@@ -65,6 +65,22 @@ namespace STML.Model
             return text
                     .Remove(startIndex, count)
                     .Insert(startIndex, replaceWith);
+        }
+
+        public static void AddEntryForEachLanguage<T>(this Dictionary<string, T> dictionary, T stmlStringToAdd, STMLProject project) where T : STMLString
+        {
+            foreach (var languageCode in project.ProjectLanguages)
+            {
+                if (!dictionary.ContainsKey(languageCode))
+                {
+                    dictionary.Add(languageCode, stmlStringToAdd.Clone<T>());
+                }
+            }
+        }
+
+        public static T GetContentOfActiveLanguage<T>(this Dictionary<string, T> dictionary, STMLProject project)
+        {
+            return dictionary[project.ActiveLanguage];
         }
     }
 }

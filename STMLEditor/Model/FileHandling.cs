@@ -1,8 +1,8 @@
-﻿using System.IO;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using System.Windows;
 using STML.Model;
+using System.IO;
+using System.Windows;
 
 namespace STMLEditor.Model
 {
@@ -42,7 +42,7 @@ namespace STMLEditor.Model
         public static void ActuallySave()
         {
             STMLWriter writer = new STMLWriter();
-            writer.WriteProject(Project, EditedProjectDirectory);
+            //writer.WriteProject(Project, EditedProjectDirectory);
             Status = SaveStatus.Saved;
         }
 
@@ -59,10 +59,10 @@ namespace STMLEditor.Model
             {
                 EditedProjectDirectory = Path.GetDirectoryName(dialog.FileName);
                 STMLReader reader = new STMLReader();
-                STMLProject newProject = reader.ReadProject(EditedProjectDirectory);
+                //STMLProject newProject = reader.ReadProject(EditedProjectDirectory); // TODO
 
                 Status = SaveStatus.Unknown;
-                return ((App)Application.Current).LoadProject(newProject);
+                return ((App)Application.Current).LoadProject(new STMLProject()); // TODO
             }
 
             return ((App)Application.Current).CurrentProject;
