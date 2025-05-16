@@ -9,6 +9,7 @@ namespace STML.Model
     {
         public new event NotifyCollectionChangedEventHandler? CollectionChanged;
 
+        // The language strings follow language code defined by ISO-639-1: https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
         public ObservableCollection<string> ProjectLanguages { get; private set; } = new ObservableCollection<string>();
         public string StandardLanguage { get; private set; }
         public string ActiveLanguage { get; private set; }
