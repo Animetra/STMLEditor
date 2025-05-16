@@ -31,18 +31,18 @@ Do this to get the formatted text of an expression:
 
 Example:
 
-[Unity Project]
-└── Assets
-	└── STML
+	[Unity Project]
+	└── Assets
+	    └── STML
 		├── Project.xml
 		├── en
-		│	├── Basic.xml
-		│	├── World 1.xml
-		│	└── World 2.xml
+		│   ├── Basic.xml
+		│   ├── World 1.xml
+		│   └── World 2.xml
 		└── de
-			├── Basic.xml
-			├── World 1.xml
-			└── World 2.xml
+		    ├── Basic.xml
+		    ├── World 1.xml
+		    └── World 2.xml
 
 ## Model
 
@@ -72,19 +72,19 @@ Terms on the other hand are perfect for translating single words and when the st
 
 Example:
 
-Stone Skipper Dash [Project]
-└── Basic [Document]
-	├── Menu Terms [Section: Dictionary]
-	│	├── Start [Term]
-	│	├── Back [Term]
-	│	├── Info [Term]
-	│	└── ...
-	└── Basic phrases [Section: Script]
-		├── If you want to know more about [Expression]
-		├── Good job! [Expression]
-		├── Welcome to [Expression]
-		├── The game is saving, please wait. [Expression]
-		└── ...
+	Stone Skipper Dash [Project]
+	└── Basic [Document]
+		├── Menu Terms [Section: Dictionary]
+		│	├── Start [Term]
+		│	├── Back [Term]
+		│	├── Info [Term]
+		│	└── ...
+		└── Basic phrases [Section: Script]
+			├── If you want to know more about [Expression]
+			├── Good job! [Expression]
+			├── Welcome to [Expression]
+			├── The game is saving, please wait. [Expression]
+			└── ...
 
 ## STML Document Structure
 
